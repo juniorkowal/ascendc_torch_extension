@@ -1,18 +1,20 @@
 import os
 import platform
 import torch_npu
-from setuptools import Extension, setup
+from setuptools import Extension, setup, find_packages
 from torch_npu.utils.cpp_extension import TorchExtension
 from torch.utils.cpp_extension import BuildExtension
+from pathlib import Path
+
 
 PACKAGE_NAME = "gather_custom"
-
+VERSION = "1.0.0"
 PYTORCH_NPU_INSTALL_PATH = os.path.dirname(os.path.abspath(torch_npu.__file__))
 PLATFORM_ARCH = platform.machine() + "-linux"
-CURRENT_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def AscendCExtension(name, sources, extra_library_dirs, extra_libraries):
+def AscendCExtension(name, sources, extra_library_dirs, extra_libraries, extra_link_args):
     kwargs = {}
     cann_home = os.environ['ASCEND_TOOLKIT_HOME']
     include_dirs = [
@@ -36,22 +38,40 @@ def AscendCExtension(name, sources, extra_library_dirs, extra_libraries):
     libraries.extend(extra_libraries)
     kwargs['libraries'] = libraries
     kwargs['language'] = 'c++'
+    kwargs['extra_link_args'] = extra_link_args
     return Extension(name, sources, **kwargs)
+
+# def get_csrc():
+#     csrc_dir = os.path.join(BASE_DIR, "src", PACKAGE_NAME)
+#     return sorted([str(p) for p in Path(csrc_dir).rglob("*.cpp")])
+
 
 
 if __name__ == "__main__":
+    package_data = {
+        PACKAGE_NAME: [
+            'lib/*.so',
+        ]
+    }
     setup(
             name=PACKAGE_NAME,
+            version=VERSION,
+            packages=find_packages(where="src"),
+            package_dir={"": "src"},
+            package_data=package_data,
             ext_modules=[
                 AscendCExtension(
                     name=f"{PACKAGE_NAME}._C",
-                    sources=['pybind11.cpp'],
+                    sources=[f"{BASE_DIR}/src/pybind11.cpp"],#get_csrc(),
                     extra_library_dirs=[
-                        os.path.join(CURRENT_DIR)
+                        os.path.join(f"{BASE_DIR}/src/lib")
                         ],  # location of custom lib{name}.so file
                     extra_libraries=[
                         'gather_custom_ascendc'
-                        ]  # name of custom lib{name}.so file
+                        ],  # name of custom lib{name}.so file
+                    extra_link_args=[
+                        '-Wl,-rpath,$ORIGIN/lib'
+                    ],
                     ),
                 ],
             cmdclass={

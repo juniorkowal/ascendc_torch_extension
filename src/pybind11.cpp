@@ -63,7 +63,7 @@ at::Tensor run_gather_custom(const at::Tensor &input, int64_t dim, const at::Ten
 }
 } // namespace my_add
 
-PYBIND11_MODULE(gather_custom, m)
+PYBIND11_MODULE(_C, m)
 {
     m.doc() = "gather_custom pybind11 interfaces";
     m.def("run_gather_custom", &my_add::run_gather_custom, "");
