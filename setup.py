@@ -64,7 +64,7 @@ if __name__ == "__main__":
                     name=f"{PACKAGE_NAME}._C",
                     sources=[f"{BASE_DIR}/src/pybind11.cpp"],#get_csrc(),
                     extra_library_dirs=[
-                        os.path.join(f"{BASE_DIR}/src/lib")
+                        os.path.join(f"{BASE_DIR}/src/{PACKAGE_NAME}/lib")
                         ],  # location of custom lib{name}.so file
                     extra_libraries=[
                         'gather_custom_ascendc'
