@@ -16,7 +16,7 @@ import sys, os
 sys.path.append(os.getcwd())
 import gather_custom
 
-torch.npu.config.allow_internal_format = False
+# torch.npu.config.allow_internal_format = False
 
 
 class TestCustomAdd(TestCase):
@@ -45,7 +45,7 @@ class TestCustomAdd(TestCase):
         my = gather_custom.run_gather_custom(input,dim,index)
         my = my.cpu()
         
-        
+        # org = torch.tensor([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]], dtype=torch.float32)
         if not torch.equal(my,org):
             self.fail(f"Is not same \nMy= {my}\n Org = {org}\n")
 

@@ -3,7 +3,17 @@
 # `bisheng` CLI: https://www.hiascend.com/document/detail/zh/canncommercial/800/developmentguide/opdevg/BishengCompiler/atlas_bisheng_10_0003.html
 # Adapted from: https://gitee.com/ascend/mstt/tree/master/sample/pytorch_adapter
 
-mkdir src/gather_custom/lib
+folder_path="src/gather_custom/lib"
+
+if [ -d "$folder_path" ]; then
+    if [ "$(ls -A "$folder_path")" ]; then
+        echo "Deleting old lib ..."
+        rm -rf "$folder_path"/*
+    fi
+else
+    echo "Creating lib folder ..."
+    mkdir -p "$folder_path"
+fi
 
 bisheng -fPIC -shared -xcce -O2 -std=c++17 \
     --cce-soc-version=Ascend910B3 --cce-soc-core-type=VecCore \

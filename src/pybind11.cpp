@@ -11,7 +11,7 @@ extern void launch_gather(
     uint8_t* input, int64_t dim, uint8_t* index, uint8_t* output, uint32_t totalLength
 );
 
-namespace my_add {
+namespace my_gather {
 at::Tensor run_gather_custom(const at::Tensor &input, int64_t dim, const at::Tensor &index)
 {
     // TORCH_CHECK( index.dim() == 2, " index must be 2 ", index.dim() );
@@ -61,10 +61,10 @@ at::Tensor run_gather_custom(const at::Tensor &input, int64_t dim, const at::Ten
     aclrtSynchronizeStream(acl_stream);
     return output;
 }
-} // namespace my_add
+} // namespace my_gather
 
 PYBIND11_MODULE(_C, m)
 {
     m.doc() = "gather_custom pybind11 interfaces";
-    m.def("run_gather_custom", &my_add::run_gather_custom, "");
+    m.def("run_gather_custom", &my_gather::run_gather_custom, "");
 }
